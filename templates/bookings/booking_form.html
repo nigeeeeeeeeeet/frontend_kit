@@ -5,28 +5,27 @@
 {% block content %}
 <div class="row justify-content-center">
   <div class="col-12 col-md-8 col-lg-6">
-    <div class="card shadow-sm">
-      <div class="card-header bg-white">
-        <h1 class="h4 mb-0">Нове бронювання</h1>
+    <div class="card shadow-sm border-0 rounded-4">
+      <div class="card-header bg-white border-0 pt-4 px-4">
+        <h1 class="h4 mb-1">Нове бронювання</h1>
+        <p class="text-muted small mb-0">Заповніть форму. Підтвердження прийде на вашу електронну пошту.</p>
       </div>
-      <div class="card-body">
+      <div class="card-body p-4">
         <form method="post" novalidate>
           {% csrf_token %}
 
           {% if form.non_field_errors %}
-            <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+            <div class="alert alert-danger">
+              {% for error in form.non_field_errors %}{{ error }}{% endfor %}
+            </div>
           {% endif %}
 
-          {# Цикл працює з будь-якою Django-формою (ModelForm) #}
           {% for field in form %}
             <div class="mb-3">
               <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
               {{ field }}
-              {% if field.help_text %}
-                <div class="form-text">{{ field.help_text }}</div>
-              {% endif %}
               {% for error in field.errors %}
-                <div class="text-danger small">{{ error }}</div>
+                <div class="text-danger small mt-1">{{ error }}</div>
               {% endfor %}
             </div>
           {% endfor %}
@@ -35,6 +34,10 @@
             <button type="submit" class="btn btn-primary btn-lg">Забронювати</button>
           </div>
         </form>
+
+        <p class="text-center small mt-3 mb-0">
+          Не впевнені у датах? <a href="{% url 'availability' %}">Перевірте календар доступності</a>
+        </p>
       </div>
     </div>
   </div>

@@ -1,0 +1,23 @@
+ЦЕ НЕ ПРОГРАМА. Це шпаргалка: скопіюй рядки в settings.py СВОГО проєкту.
+
+1) Відкрий settings.py (папка проєкту, де лежить manage.py).
+
+2) Перевір, що в INSTALLED_APPS є:
+
+    "django.contrib.staticfiles",
+
+3) Перевір, що в TEMPLATES, в блоці з 'BACKEND': 'django.template.backends.django.DjangoTemplates', є:
+
+    "DIRS": [BASE_DIR / "templates"],
+
+4) В кінець settings.py встав (якщо STATIC_URL вже є, не дублюй його):
+
+    STATIC_URL = "static/"
+    STATICFILES_DIRS = [BASE_DIR / "static"]
+    STATIC_ROOT = BASE_DIR / "staticfiles"
+
+Якщо BASE_DIR у тебе записаний через os.path.join (старий стиль), пиши так:
+
+    STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
+    STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+    # і в TEMPLATES: "DIRS": [os.path.join(BASE_DIR, "templates")],

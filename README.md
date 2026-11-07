@@ -1,72 +1,73 @@
-# Фронтенд для системы бронирования (Django + Bootstrap 5)
+# Система бронювання (Django + Bootstrap 5)
 
-## 1. Ветка
+Повний робочий проєкт за ТЗ: кімнати, бронювання, адмін-панель, календар доступності,
+реєстрація/вхід, підтвердження на email (лист друкується в консоль) і стилізований фронтенд.
 
-```bash
-git checkout main
-git pull
-git checkout -b feature/frontend
-```
+Моделі: `RoomType`, `Room`, `Booking` (мінімум 3, як у ТЗ).
 
-## 2. Статика в Django
+## Запуск на Windows (PowerShell)
 
-Скопируй содержимое `settings_snippet.py` в свой `settings.py`.
-Проверь:
+Відкрий папку `booking_site` у VS Code (File -> Open Folder), потім Terminal -> New Terminal.
+Переконайся, що в цій папці є `manage.py` (команда `dir`).
 
-- в `INSTALLED_APPS` есть `django.contrib.staticfiles`
-- в `TEMPLATES[0]["DIRS"]` есть `BASE_DIR / "templates"`
-
-## 3. Файлы
-
-Скопируй в корень проекта (рядом с `manage.py`):
-
-```
-static/css/custom.css
-static/js/main.js
-templates/base.html
-templates/rooms/room_list.html      (пример)
-templates/bookings/booking_form.html (пример)
-```
-
-В примерах подставь свои имена: `rooms`, `room.name`, `room.price`, `room.capacity`, url-имена (`booking_create` и т.д.).
-
-## 4. Подключение шаблонов
-
-Каждый шаблон должен начинаться с:
-
-```django
-{% extends "base.html" %}
-{% block content %}
-...
-{% endblock %}
-```
-
-## 5. Коммиты
-
-```bash
-git add settings.py templates/base.html static/
-git commit -m "Add static files config and Bootstrap base template"
-
-git add templates/
-git commit -m "Style room list and booking form with Bootstrap"
-
-git add static/css/custom.css
-git commit -m "Add custom CSS"
-```
-
-## 6. Проверка
-
-```bash
+```powershell
+python -m venv venv
+venv\Scripts\activate
+pip install -r requirements.txt
+python manage.py makemigrations rooms bookings
+python manage.py migrate
+python manage.py seed
+python manage.py createsuperuser
 python manage.py runserver
 ```
 
-Если стили не подтянулись: DevTools -> Network, смотри 404 на `/static/...`.
+Відкрий у браузері: http://127.0.0.1:8000/
 
-## 7. Pull Request
+Якщо `venv\Scripts\activate` блокується політикою PowerShell:
 
-```bash
+```powershell
+Set-ExecutionPolicy -Scope Process Bypass
+venv\Scripts\activate
+```
+
+## Що де лежить
+
+| Сторінка | Адреса |
+|---|---|
+| Список кімнат + фільтр за типом | `/` |
+| Форма бронювання | `/bookings/new/` |
+| Календар доступності | `/bookings/availability/` |
+| Мої бронювання (потрібен вхід) | `/bookings/my/` |
+| Реєстрація / вхід | `/bookings/signup/`, `/accounts/login/` |
+| Адмін-панель (кімнати, бронювання, підтвердження/скасування) | `/admin/` |
+
+Фронтенд: `templates/` (Bootstrap 5.3 через CDN) і `static/css/custom.css`, `static/js/main.js`.
+Налаштування статики: `config/settings.py` (`STATIC_URL`, `STATICFILES_DIRS`, `STATIC_ROOT`).
+
+## Здача завдання (гілка, коміт, Pull Request)
+
+Якщо проєкт уже лежить у твоєму git-репозиторії:
+
+```powershell
+git checkout main
+git pull
+git checkout -b feature/frontend
+git add .
+git commit -m "Add Bootstrap frontend and static files setup"
 git push -u origin feature/frontend
 ```
 
-На GitHub: Compare & pull request, `feature/frontend` -> `main`.
-В описание перетащи скриншоты сайта. Ссылку на PR отправь преподавателю.
+Якщо репозиторій ще не створено: створи порожній репозиторій на GitHub, потім
+
+```powershell
+git init
+git add .
+git commit -m "Initial booking project"
+git branch -M main
+git remote add origin <посилання_на_репозиторій>
+git push -u origin main
+git checkout -b feature/frontend
+```
+
+Після цього внеси свої зміни у фронтенд, зроби коміт, `git push -u origin feature/frontend`
+і створи Pull Request на GitHub. Скріншоти сайту перетягни в опис PR.
