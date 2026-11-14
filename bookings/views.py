@@ -2,9 +2,7 @@ import calendar
 from datetime import date, timedelta
 
 from django.contrib import messages
-from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import get_object_or_404, redirect, render
 
 from rooms.models import Room, RoomType
@@ -14,13 +12,13 @@ from .forms import BookingForm
 from .models import Booking
 
 
+@login_required
 def booking_create(request):
     if request.method == "POST":
         form = BookingForm(request.POST)
         if form.is_valid():
             booking = form.save(commit=False)
-            if request.user.is_authenticated:
-                booking.user = request.user
+            booking.user = request.user
             booking.save()
             send_booking_email(booking)
             request.session["last_booking"] = booking.pk
@@ -34,19 +32,17 @@ def booking_create(request):
         room_id = request.GET.get("room", "")
         if room_id.isdigit():
             initial["room"] = int(room_id)
-        if request.user.is_authenticated:
-            initial["guest_name"] = (
-                request.user.get_full_name() or request.user.username
-            )
-            initial["email"] = request.user.email
+        initial["guest_name"] = request.user.get_full_name() or request.user.username
+        initial["email"] = request.user.email
         form = BookingForm(initial=initial)
 
     return render(request, "bookings/booking_form.html", {"form": form})
 
 
+@login_required
 def booking_success(request, pk):
     booking = get_object_or_404(Booking.objects.select_related("room"), pk=pk)
-    is_owner = request.user.is_authenticated and booking.user_id == request.user.id
+    is_owner = booking.user_id == request.user.id
     if request.session.get("last_booking") != booking.pk and not is_owner:
         return redirect("room_list")
     return render(request, "bookings/booking_success.html", {"booking": booking})
@@ -118,19 +114,3 @@ def my_bookings(request):
         "room", "room__room_type"
     )
     return render(request, "bookings/my_bookings.html", {"bookings": bookings})
-
-
-def signup(request):
-    if request.method == "POST":
-        form = UserCreationForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            login(request, user)
-            messages.success(request, "Реєстрація пройшла успішно. Ласкаво просимо!")
-            return redirect("room_list")
-    else:
-        form = UserCreationForm()
-
-    for field in form.fields.values():
-        field.widget.attrs["class"] = "form-control"
-    return render(request, "registration/signup.html", {"form": form})

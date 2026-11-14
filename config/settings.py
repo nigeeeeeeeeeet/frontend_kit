@@ -15,6 +15,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "accounts",
     "rooms",
     "bookings",
 ]
@@ -77,6 +78,8 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # ---- Авторизація ----
+# Кастомна модель користувача (accounts.User) — має бути вказана ДО першої міграції
+AUTH_USER_MODEL = "accounts.User"
 LOGIN_URL = "login"
 LOGIN_REDIRECT_URL = "room_list"
 LOGOUT_REDIRECT_URL = "room_list"
