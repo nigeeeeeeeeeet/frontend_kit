@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}Кімнати{% endblock %}
+
+{% block content %}
+<section class="hero rounded-4 p-4 p-md-5 mb-4 text-white">
+  <h1 class="display-6 fw-bold mb-2">Знайдіть і забронюйте місце для вашого заходу</h1>
+  <p class="lead mb-4">Конференц-зали, переговорні, коворкінг та банкетні зали. Перевірте доступність і бронюйте онлайн.</p>
+  <a href="{% url 'booking_create' %}" class="btn btn-light btn-lg me-2">Забронювати</a>
+  <a href="{% url 'availability' %}" class="btn btn-outline-light btn-lg">Календар доступності</a>
+</section>
+
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+  <h2 class="h4 mb-0">Кімнати та місця</h2>
+
+  <form method="get" class="d-flex gap-2">
+    <select name="type" class="form-select" aria-label="Тип кімнати">
+      <option value="">Усі типи</option>
+      {% for t in room_types %}
+        <option value="{{ t.id }}" {% if selected_type == t.id|stringformat:"s" %}selected{% endif %}>{{ t.name }}</option>
+      {% endfor %}
+    </select>
+    <button class="btn btn-outline-primary" type="submit">Фільтр</button>
+  </form>
+</div>
+
+<div class="row g-4">
+  {% for room in rooms %}
+    <div class="col-12 col-md-6 col-lg-4">
+      <div class="card room-card h-100 shadow-sm">
+        <div class="room-card-top p-3">
+          <span class="badge rounded-pill text-bg-light">{{ room.room_type.name }}</span>
+        </div>
+        <div class="card-body d-flex flex-column">
+          <h5 class="card-title">{{ room.name }}</h5>
+          <p class="card-text text-muted">{{ room.description|truncatechars:100 }}</p>
+
+          {% if room.features_list %}
+            <div class="mb-3">
+              {% for f in room.features_list %}
+                <span class="badge feature-badge me-1 mb-1">{{ f }}</span>
+              {% endfor %}
+            </div>
+          {% endif %}
+
+          <ul class="list-unstyled small mb-3">
+            <li>👥 Місткість: <strong>{{ room.capacity }}</strong> осіб</li>
+            <li>💰 Ціна: <strong>{{ room.price|floatformat:0 }} грн</strong> / добу</li>
+          </ul>
+
+          <a href="{% url 'booking_create' %}?room={{ room.id }}" class="btn btn-primary mt-auto">Забронювати</a>
+        </div>
+      </div>
+    </div>
+  {% empty %}
+    <div class="col-12">
+      <div class="alert alert-info mb-0">
+        Кімнат поки немає. Додайте їх в адмін-панелі або виконайте <code>python manage.py seed</code>.
+      </div>
+    </div>
+  {% endfor %}
+</div>
+{% endblock %}
